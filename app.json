@@ -2,7 +2,7 @@
   "expo": {
     "name": "CCAPI Admin",
     "slug": "ccapi-ios",
-    "owner": "cangerx",
+    "owner": "canger",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./icons/ios/AppIcon.appiconset/icon-1024.png",
@@ -37,7 +37,10 @@
       "expo-secure-store"
     ],
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "fc7eb3ce-e26e-45ba-883f-8bf401cf189d"
+      }
     },
     "runtimeVersion": {
       "policy": "appVersion"
