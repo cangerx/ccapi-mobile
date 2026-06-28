@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - ios-simulator
+          - android-apk
 
 jobs:
   build:
@@ -39,7 +40,12 @@ jobs:
         run: npm ci
 
       - name: Trigger EAS build and wait for completion
-        run: eas build --non-interactive --wait --json --profile development --platform ios > eas-build.json
+        run: |
+          if [ "${{ inputs.build_target }}" = "android-apk" ]; then
+            eas build --non-interactive --wait --json --profile android-apk --platform android > eas-build.json
+          else
+            eas build --non-interactive --wait --json --profile development --platform ios > eas-build.json
+          fi
 
       - name: Publish build links in workflow summary
         run: |

@@ -38,12 +38,20 @@ npm run start:dev-client
 
 The `development` profile sets `ios.simulator=true`, so it does not need Apple signing credentials.
 
-## GitHub Actions Simulator Build
+For an Android APK:
+
+```bash
+npm run eas:build:android-apk
+```
+
+The `android-apk` profile sets `android.buildType=apk`, so the artifact can be installed directly on Android devices.
+
+## GitHub Actions Builds
 
 1. Open **Actions -> EAS Build -> Run workflow**.
-2. Keep `build_target=ios-simulator`.
+2. Choose `build_target=ios-simulator` or `build_target=android-apk`.
 3. Wait for the run to finish.
-4. Open the run summary or Expo build page and download the simulator artifact.
+4. Open the run summary or Expo build page and download the artifact.
 
 ## Preview Build
 

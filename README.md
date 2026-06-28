@@ -53,9 +53,9 @@ npm run ios
 npm run web
 ```
 
-## iOS Simulator Cloud Build
+## Cloud Builds
 
-This repo is configured for iOS Simulator builds through EAS. This path does not require an Apple Developer certificate.
+This repo is configured for iOS Simulator and Android APK builds through EAS. The iOS Simulator path does not require an Apple Developer certificate.
 
 Before using EAS cloud builds in another account, initialize this project under your Expo account:
 
@@ -74,6 +74,7 @@ EAS scripts:
 
 ```bash
 npm run eas:build:simulator
+npm run eas:build:android-apk
 npm run eas:build:development
 npm run eas:build:preview
 npm run eas:build:production
@@ -88,13 +89,13 @@ npm run eas:update:production -- "your message"
 
 Additional release notes: [docs/EXPO_RELEASE.md](docs/EXPO_RELEASE.md)
 
-GitHub Actions simulator build:
+GitHub Actions builds:
 
 - Workflow: `.github/workflows/eas-build.yml`
 - Trigger: **Actions → EAS Build → Run workflow**
-- Input: `build_target=ios-simulator`
+- Inputs: `build_target=ios-simulator` or `build_target=android-apk`
 - Requirement: repository secret `EXPO_TOKEN`
-- Download: after completion, open the run **Summary** or the Expo build page and use the simulator artifact.
+- Download: after completion, open the run **Summary** or the Expo build page and use the build artifact.
 
 Install a downloaded simulator build:
 
