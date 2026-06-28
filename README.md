@@ -55,6 +55,19 @@ npm run web
 
 ## Build & Release
 
+Before using EAS cloud builds, initialize this project under your Expo account:
+
+```bash
+npx eas login
+npx eas init
+```
+
+For GitHub Actions builds, add repository secret:
+
+```txt
+EXPO_TOKEN
+```
+
 EAS scripts:
 
 ```bash
@@ -76,9 +89,9 @@ GitHub Actions Android build (downloadable):
 
 - Workflow: `.github/workflows/eas-build.yml`
 - Trigger: **Actions → EAS Build → Run workflow**
-- Inputs: `profile=preview`, `platform=android`
+- Inputs: `profile=preview`, `platform=ios` for iOS, or `platform=android` for Android
 - Requirement: repository secret `EXPO_TOKEN`
-- Download: after completion, open the run **Summary** and use the `ANDROID download` link.
+- Download: after completion, open the run **Summary** and use the build details/download link.
 
 ## Project Structure
 
