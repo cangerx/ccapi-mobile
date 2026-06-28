@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="icons/ios/AppIcon.appiconset/icon-1024.png" alt="sub2api-mobile logo" width="96" />
+  <img src="icons/ios/AppIcon.appiconset/icon-1024.png" alt="ccapi-ios logo" width="96" />
 </p>
 
-# sub2api-mobile
+# ccapi-ios
 
-Mobile-first admin console for Sub2API operations, built with Expo + React Native + Expo Router.
+Mobile-first admin console for CCAPI operations, built with Expo + React Native + Expo Router.
 
 ## Mobile Preview
 

@@ -61,7 +61,7 @@ function getErrorMessage(error: unknown) {
       case 'BASE_URL_REQUIRED':
         return '请先到服务器页填写服务地址。';
       case 'ADMIN_API_KEY_REQUIRED':
-        return '请先到服务器页填写 Admin Token。';
+        return '请先到服务器页填写 Admin Key。';
       case 'INVALID_SERVER_RESPONSE':
         return '服务返回格式异常，请确认后端接口可用并检查网关日志。';
       case 'REQUEST_FAILED':

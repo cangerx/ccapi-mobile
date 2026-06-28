@@ -1,4 +1,4 @@
-# Contributing to sub2api-mobile
+# Contributing to ccapi-ios
 
 Thanks for your interest in contributing.
 
@@ -20,8 +20,8 @@ Thanks for your interest in contributing.
 4. For web + admin proxy testing (recommended for admin endpoints):
 
    ```bash
-   SUB2API_BASE_URL="https://your-upstream-host.example.com" \
-   SUB2API_ADMIN_API_KEY="admin-xxxx" \
+   CCAPI_BASE_URL="https://your-upstream-host.example.com" \
+   CCAPI_ADMIN_API_KEY="admin-xxxx" \
    ALLOW_ORIGIN="http://localhost:8081" \
    npm run dev:web-proxy
    ```

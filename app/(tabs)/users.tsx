@@ -92,7 +92,7 @@ function getErrorMessage(error: unknown) {
       case 'BASE_URL_REQUIRED':
         return '请先到服务器页填写服务地址。';
       case 'ADMIN_API_KEY_REQUIRED':
-        return '请先到服务器页填写 Admin Token。';
+        return '请先到服务器页填写 Admin Key。';
       default:
         return error.message;
     }

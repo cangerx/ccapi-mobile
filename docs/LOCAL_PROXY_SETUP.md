@@ -2,14 +2,14 @@
 
 本项目内置了一个最小代理层，用来解决：
 
-- Expo Web 调用 `Sub2API` 管理接口时的 CORS
+- Expo Web 调用 `CCAPI` 管理接口时的 CORS
 - 管理员 API Key 不直接暴露给客户端
 
 ## 启动代理
 
 ```bash
-SUB2API_BASE_URL="https://x.empjs.dev" \
-SUB2API_ADMIN_API_KEY="admin-xxxx" \
+CCAPI_BASE_URL="https://x.empjs.dev" \
+CCAPI_ADMIN_API_KEY="admin-xxxx" \
 ALLOW_ORIGIN="http://localhost:8081" \
 npm run proxy
 ```
@@ -42,8 +42,8 @@ npx expo export --platform web
 ## 一条命令同时启动
 
 ```bash
-SUB2API_BASE_URL="https://x.empjs.dev" \
-SUB2API_ADMIN_API_KEY="admin-xxxx" \
+CCAPI_BASE_URL="https://x.empjs.dev" \
+CCAPI_ADMIN_API_KEY="admin-xxxx" \
 ALLOW_ORIGIN="http://localhost:8081" \
 npm run dev:web-proxy
 ```

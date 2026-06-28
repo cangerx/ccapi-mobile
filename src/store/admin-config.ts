@@ -2,10 +2,10 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 const { proxy } = require('valtio');
 
-const BASE_URL_KEY = 'sub2api_base_url';
-const ADMIN_KEY_KEY = 'sub2api_admin_api_key';
-const ACCOUNTS_KEY = 'sub2api_accounts';
-const ACTIVE_ACCOUNT_ID_KEY = 'sub2api_active_account_id';
+const BASE_URL_KEY = 'ccapi_base_url';
+const ADMIN_KEY_KEY = 'ccapi_admin_api_key';
+const ACCOUNTS_KEY = 'ccapi_accounts';
+const ACTIVE_ACCOUNT_ID_KEY = 'ccapi_active_account_id';
 const IS_WEB = Platform.OS === 'web';
 
 export type AdminAccountProfile = {

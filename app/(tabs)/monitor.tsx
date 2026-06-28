@@ -130,9 +130,9 @@ function getErrorMessage(error: unknown) {
       case 'BASE_URL_REQUIRED':
         return '请先去服务器页填写服务地址。';
       case 'ADMIN_API_KEY_REQUIRED':
-        return '请先去服务器页填写 Admin Token。';
+        return '请先去服务器页填写 Admin Key。';
       case 'INVALID_SERVER_RESPONSE':
-        return '当前服务返回的数据格式不正确，请确认它是可用的 Sub2API 管理接口。';
+        return '当前服务返回的数据格式不正确，请确认它是可用的 CCAPI 管理接口。';
       default:
         return error.message;
     }
@@ -288,7 +288,7 @@ export default function MonitorScreen() {
 
         {!hasAccount ? (
           <Section title="未连接服务器" subtitle="需要先配置连接">
-            <Text style={{ fontSize: 14, lineHeight: 22, color: colors.subtext }}>请先前往“服务器”页填写服务地址和 Admin Token，再返回查看概览数据。</Text>
+            <Text style={{ fontSize: 14, lineHeight: 22, color: colors.subtext }}>请先前往“服务器”页填写服务地址和 Admin Key，再返回查看概览数据。</Text>
             <Pressable style={{ marginTop: 14, alignSelf: 'flex-start', backgroundColor: colors.primary, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 }} onPress={() => router.push('/settings')}>
               <Text style={{ color: '#fff', fontSize: 13, fontWeight: '700' }}>去配置服务器</Text>
             </Pressable>

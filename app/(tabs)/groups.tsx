@@ -55,7 +55,7 @@ export default function GroupsScreen() {
     []
   );
   const emptyState = useMemo(
-    () => <ListCard title="暂无分组" meta={errorMessage || '连上 Sub2API 后，这里会展示分组列表。'} icon={FolderKanban} />,
+    () => <ListCard title="暂无分组" meta={errorMessage || '连上 CCAPI 后，这里会展示分组列表。'} icon={FolderKanban} />,
     [errorMessage]
   );
 

@@ -4,17 +4,17 @@ const express = require('express');
 const app = express();
 
 const port = Number(process.env.PORT || 8787);
-const upstreamBaseUrl = (process.env.SUB2API_BASE_URL || '').trim().replace(/\/$/, '');
-const adminApiKey = (process.env.SUB2API_ADMIN_API_KEY || '').trim();
+const upstreamBaseUrl = (process.env.CCAPI_BASE_URL || process.env.SUB2API_BASE_URL || '').trim().replace(/\/$/, '');
+const adminApiKey = (process.env.CCAPI_ADMIN_API_KEY || process.env.SUB2API_ADMIN_API_KEY || '').trim();
 const allowedOrigin = (process.env.ALLOW_ORIGIN || '*').trim();
 
 async function fetchAdminJson(path) {
   if (!upstreamBaseUrl) {
-    throw new Error('SUB2API_BASE_URL_NOT_CONFIGURED');
+    throw new Error('CCAPI_BASE_URL_NOT_CONFIGURED');
   }
 
   if (!adminApiKey) {
-    throw new Error('SUB2API_ADMIN_API_KEY_NOT_CONFIGURED');
+    throw new Error('CCAPI_ADMIN_API_KEY_NOT_CONFIGURED');
   }
 
   const response = await fetch(`${upstreamBaseUrl}${path}`, {
@@ -159,12 +159,12 @@ app.get('/api/v1/keys', async (req, res) => {
 
 app.use('/api/v1/admin', async (req, res) => {
   if (!upstreamBaseUrl) {
-    res.status(500).json({ code: 500, message: 'SUB2API_BASE_URL_NOT_CONFIGURED' });
+    res.status(500).json({ code: 500, message: 'CCAPI_BASE_URL_NOT_CONFIGURED' });
     return;
   }
 
   if (!adminApiKey) {
-    res.status(500).json({ code: 500, message: 'SUB2API_ADMIN_API_KEY_NOT_CONFIGURED' });
+    res.status(500).json({ code: 500, message: 'CCAPI_ADMIN_API_KEY_NOT_CONFIGURED' });
     return;
   }
 
