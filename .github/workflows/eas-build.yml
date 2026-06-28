@@ -9,6 +9,7 @@ on:
         default: preview
         type: choice
         options:
+          - development
           - preview
           - production
       platform:
