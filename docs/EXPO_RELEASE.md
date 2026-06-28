@@ -29,12 +29,21 @@ npm ci
 npm run start
 ```
 
-For a development client:
+For an iOS Simulator development client:
 
 ```bash
-npm run eas:build:development
+npm run eas:build:simulator
 npm run start:dev-client
 ```
+
+The `development` profile sets `ios.simulator=true`, so it does not need Apple signing credentials.
+
+## GitHub Actions Simulator Build
+
+1. Open **Actions -> EAS Build -> Run workflow**.
+2. Keep `build_target=ios-simulator`.
+3. Wait for the run to finish.
+4. Open the run summary or Expo build page and download the simulator artifact.
 
 ## Preview Build
 

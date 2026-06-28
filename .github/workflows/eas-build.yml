@@ -3,24 +3,13 @@ name: EAS Build
 on:
   workflow_dispatch:
     inputs:
-      profile:
-        description: EAS build profile
+      build_target:
+        description: Build target
         required: true
-        default: preview
+        default: ios-simulator
         type: choice
         options:
-          - development
-          - preview
-          - production
-      platform:
-        description: Target platform
-        required: true
-        default: android
-        type: choice
-        options:
-          - android
-          - ios
-          - all
+          - ios-simulator
 
 jobs:
   build:
@@ -50,7 +39,7 @@ jobs:
         run: npm ci
 
       - name: Trigger EAS build and wait for completion
-        run: eas build --non-interactive --wait --json --profile "${{ inputs.profile }}" --platform "${{ inputs.platform }}" > eas-build.json
+        run: eas build --non-interactive --wait --json --profile development --platform ios > eas-build.json
 
       - name: Publish build links in workflow summary
         run: |

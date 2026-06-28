@@ -53,9 +53,11 @@ npm run ios
 npm run web
 ```
 
-## Build & Release
+## iOS Simulator Cloud Build
 
-Before using EAS cloud builds, initialize this project under your Expo account:
+This repo is configured for iOS Simulator builds through EAS. This path does not require an Apple Developer certificate.
+
+Before using EAS cloud builds in another account, initialize this project under your Expo account:
 
 ```bash
 npx eas login
@@ -71,6 +73,7 @@ EXPO_TOKEN
 EAS scripts:
 
 ```bash
+npm run eas:build:simulator
 npm run eas:build:development
 npm run eas:build:preview
 npm run eas:build:production
@@ -85,13 +88,20 @@ npm run eas:update:production -- "your message"
 
 Additional release notes: [docs/EXPO_RELEASE.md](docs/EXPO_RELEASE.md)
 
-GitHub Actions Android build (downloadable):
+GitHub Actions simulator build:
 
 - Workflow: `.github/workflows/eas-build.yml`
 - Trigger: **Actions → EAS Build → Run workflow**
-- Inputs: `profile=preview`, `platform=ios` for iOS, or `platform=android` for Android
+- Input: `build_target=ios-simulator`
 - Requirement: repository secret `EXPO_TOKEN`
-- Download: after completion, open the run **Summary** and use the build details/download link.
+- Download: after completion, open the run **Summary** or the Expo build page and use the simulator artifact.
+
+Install a downloaded simulator build:
+
+```bash
+xcrun simctl boot "iPhone 16" || true
+xcrun simctl install booted /path/to/CCAPIAdmin.app
+```
 
 ## Project Structure
 
