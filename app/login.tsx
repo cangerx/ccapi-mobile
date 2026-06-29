@@ -26,15 +26,17 @@ type FormValues = z.infer<typeof schema>;
 type ConnectionState = 'idle' | 'checking' | 'error';
 
 const colors = {
-  page: '#f4efe4',
-  card: '#fbf8f2',
-  mutedCard: '#f1ece2',
-  primary: '#1d5f55',
-  text: '#16181a',
-  subtext: '#6f665c',
-  border: '#e7dfcf',
-  dangerBg: '#fbf1eb',
-  danger: '#c25d35',
+  page: '#f6f7f9',
+  card: '#ffffff',
+  mutedCard: '#f9fafb',
+  primary: '#2563eb',
+  text: '#111827',
+  subtext: '#6b7280',
+  border: '#e5e7eb',
+  inputBorder: '#d1d5db',
+  dangerBg: '#fef3f2',
+  danger: '#b42318',
+  disabled: '#9ca3af',
 };
 
 function getConnectionErrorMessage(error: unknown) {
@@ -83,7 +85,7 @@ export default function LoginScreen() {
             </Text>
           </View>
 
-          <View style={{ backgroundColor: colors.card, borderRadius: 22, padding: 18, gap: 16 }}>
+          <View style={{ backgroundColor: colors.card, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 18, gap: 16 }}>
             <View>
               <Text style={{ marginBottom: 8, fontSize: 12, color: colors.subtext }}>服务器地址</Text>
               <Controller
@@ -100,10 +102,10 @@ export default function LoginScreen() {
                       onChange(text);
                     }}
                     placeholder="例如：https://api.example.com"
-                    placeholderTextColor="#9b9081"
+                    placeholderTextColor="#9ca3af"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    style={{ backgroundColor: colors.mutedCard, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: colors.text }}
+                    style={{ backgroundColor: colors.mutedCard, borderWidth: 1, borderColor: colors.inputBorder, borderRadius: 10, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: colors.text }}
                   />
                 )}
               />
@@ -126,14 +128,16 @@ export default function LoginScreen() {
                         onChange(text);
                       }}
                       placeholder="admin-xxxxxxxx"
-                      placeholderTextColor="#9b9081"
+                      placeholderTextColor="#9ca3af"
                       autoCapitalize="none"
                       autoCorrect={false}
                       secureTextEntry={!showAdminKey}
                       style={{
                         flex: 1,
                         backgroundColor: colors.mutedCard,
-                        borderRadius: 16,
+                        borderWidth: 1,
+                        borderColor: colors.inputBorder,
+                        borderRadius: 10,
                         paddingHorizontal: 16,
                         paddingVertical: 14,
                         fontSize: 16,
@@ -142,9 +146,9 @@ export default function LoginScreen() {
                     />
                     <Pressable
                       onPress={() => setShowAdminKey((value) => !value)}
-                      style={{ backgroundColor: colors.border, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}
+                      style={{ backgroundColor: '#f3f4f6', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10 }}
                     >
-                      <Text style={{ fontSize: 12, fontWeight: '700', color: '#4e463e' }}>{showAdminKey ? '隐藏' : '显示'}</Text>
+                      <Text style={{ fontSize: 12, fontWeight: '700', color: '#4b5563' }}>{showAdminKey ? '隐藏' : '显示'}</Text>
                     </Pressable>
                   </View>
                 )}
@@ -152,19 +156,19 @@ export default function LoginScreen() {
             </View>
 
             {formState.errors.baseUrl || formState.errors.adminApiKey ? (
-              <View style={{ borderRadius: 14, backgroundColor: colors.dangerBg, paddingHorizontal: 14, paddingVertical: 12 }}>
+              <View style={{ borderRadius: 10, backgroundColor: colors.dangerBg, borderWidth: 1, borderColor: '#fecaca', paddingHorizontal: 14, paddingVertical: 12 }}>
                 <Text style={{ color: colors.danger, fontSize: 14 }}>{formState.errors.baseUrl?.message || formState.errors.adminApiKey?.message}</Text>
               </View>
             ) : null}
 
             {connectionMessage ? (
-              <View style={{ borderRadius: 14, backgroundColor: colors.dangerBg, paddingHorizontal: 14, paddingVertical: 12 }}>
+              <View style={{ borderRadius: 10, backgroundColor: colors.dangerBg, borderWidth: 1, borderColor: '#fecaca', paddingHorizontal: 14, paddingVertical: 12 }}>
                 <Text style={{ color: colors.danger, fontSize: 14 }}>{connectionMessage}</Text>
               </View>
             ) : null}
 
             <Pressable
-              style={{ backgroundColor: connectionState === 'checking' ? '#7ca89f' : colors.primary, borderRadius: 18, paddingVertical: 15, alignItems: 'center' }}
+              style={{ backgroundColor: connectionState === 'checking' ? colors.disabled : colors.primary, borderRadius: 10, paddingVertical: 15, alignItems: 'center' }}
               disabled={connectionState === 'checking'}
               onPress={handleSubmit(async (values) => {
                 setConnectionState('checking');

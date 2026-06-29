@@ -1,5 +1,6 @@
-import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
-import { KeyRound, Search, ShieldCheck, ShieldOff } from 'lucide-react-native';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { KeyRound, Plus, Search, ShieldCheck, ShieldOff } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, Text, TextInput, View } from 'react-native';
 import type { Edge } from 'react-native-safe-area-context';
@@ -7,8 +8,9 @@ import type { Edge } from 'react-native-safe-area-context';
 import { ListCard } from '@/src/components/list-card';
 import { ScreenShell } from '@/src/components/screen-shell';
 import { useDebouncedValue } from '@/src/hooks/use-debounced-value';
+import { formatAccountMeta } from '@/src/lib/account-labels';
 import { formatTokenValue } from '@/src/lib/formatters';
-import { getAccountTodayStats, listAccounts, setAccountSchedulable, testAccount } from '@/src/services/admin';
+import { getBatchAccountTodayStats, listAccountModels, listAccounts, setAccountSchedulable } from '@/src/services/admin';
 import type { AdminAccount } from '@/src/types/admin';
 
 type AccountStatusFilter = 'all' | 'active' | 'paused' | 'error';
@@ -74,23 +76,24 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['accounts'] }),
   });
 
-  const testMutation = useMutation({
-    mutationFn: (accountId: number) => testAccount(accountId),
+  const modelsMutation = useMutation({
+    mutationFn: (accountId: number) => listAccountModels(accountId),
   });
 
   const items = accountsQuery.data?.items ?? [];
-  const accountCostQueries = useQueries({
-    queries: items.map((account) => ({
-      queryKey: ['account-today-stats', account.id],
-      queryFn: () => getAccountTodayStats(account.id),
-      staleTime: 60_000,
-    })),
+  const accountIds = useMemo(() => items.map((account) => account.id), [items]);
+  const batchTodayStatsQuery = useQuery({
+    queryKey: ['account-today-stats-batch', accountIds.join(',')],
+    queryFn: () => getBatchAccountTodayStats(accountIds),
+    enabled: accountIds.length > 0,
+    staleTime: 60_000,
   });
 
   const todayByAccountId = useMemo(() => {
     const next = new Map<number, AccountTodaySummary>();
-    items.forEach((account, index) => {
-      const result = accountCostQueries[index]?.data;
+    const stats = batchTodayStatsQuery.data?.stats ?? {};
+    items.forEach((account) => {
+      const result = stats[String(account.id)];
       const fromStatsCost = typeof result?.cost === 'number' && Number.isFinite(result.cost) ? result.cost : undefined;
       const fromExtra = typeof account.extra?.today_cost === 'number' ? account.extra.today_cost : undefined;
       const cost = fromStatsCost ?? fromExtra ?? 0;
@@ -99,7 +102,7 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
       next.set(account.id, { requests, tokens, cost });
     });
     return next;
-  }, [accountCostQueries, items]);
+  }, [batchTodayStatsQuery.data?.stats, items]);
 
   const filteredItems = useMemo(() => {
     const statusMatched = items.filter((account) => {
@@ -138,15 +141,15 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
   const listHeader = useMemo(
     () => (
       <View className="pb-2">
-        <View className="rounded-[24px] bg-[#fbf8f2] p-2.5">
-          <View className="flex-row items-center rounded-[18px] bg-[#f1ece2] px-4 py-3">
-            <Search color="#7d7468" size={18} />
+        <View className="rounded-[12px] border border-[#e5e7eb] bg-white p-3">
+          <View className="flex-row items-center rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-3 py-2.5">
+            <Search color="#6b7280" size={18} />
             <TextInput
               defaultValue=""
               onChangeText={setSearchText}
-              placeholder="搜索账号名称 / 平台"
-              placeholderTextColor="#9b9081"
-              className="ml-3 flex-1 text-base text-[#16181a]"
+              placeholder="搜索账号名称或平台"
+              placeholderTextColor="#9ca3af"
+              className="ml-3 flex-1 text-[15px] text-[#111827]"
             />
           </View>
 
@@ -162,9 +165,9 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
                 <Pressable
                   key={key}
                   onPress={() => setFilter(key)}
-                  className={active ? 'rounded-full bg-[#1d5f55] px-3 py-2' : 'rounded-full bg-[#e7dfcf] px-3 py-2'}
+                  className={active ? 'rounded-full bg-[#2563eb] px-3 py-2' : 'rounded-full bg-[#f3f4f6] px-3 py-2'}
                 >
-                  <Text className={active ? 'text-xs font-semibold text-white' : 'text-xs font-semibold text-[#4e463e]'}>{label}</Text>
+                  <Text className={active ? 'text-xs font-semibold text-white' : 'text-xs font-semibold text-[#4b5563]'}>{label}</Text>
                 </Pressable>
               );
             })}
@@ -172,17 +175,17 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
 
           <View className="mt-3 flex-row gap-2">
             {([
-              ['usage-desc', '请求高→低'],
-              ['usage-asc', '请求低→高'],
+              ['usage-desc', '请求最多'],
+              ['usage-asc', '请求最少'],
             ] as const).map(([key, label]) => {
               const active = usageSort === key;
               return (
                 <Pressable
                   key={key}
                   onPress={() => setUsageSort(key)}
-                  className={active ? 'rounded-full bg-[#4e463e] px-3 py-3' : 'rounded-full bg-[#e7dfcf] px-3 py-3'}
+                  className={active ? 'rounded-full bg-[#111827] px-3 py-3' : 'rounded-full bg-[#f3f4f6] px-3 py-3'}
                 >
-                  <Text className={active ? 'text-xs font-semibold text-white' : 'text-xs font-semibold text-[#4e463e]'}>{label}</Text>
+                  <Text className={active ? 'text-xs font-semibold text-white' : 'text-xs font-semibold text-[#4b5563]'}>{label}</Text>
                 </Pressable>
               );
             })}
@@ -204,13 +207,13 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
       const toggleLabel = nextSchedulable ? '恢复' : '暂停';
       const testFeedback = testFeedbackByAccountId[account.id];
       const isTogglingCurrent = togglingAccountId === account.id && toggleMutation.isPending;
-      const isTestingCurrent = testingAccountId === account.id && testMutation.isPending;
+      const isTestingCurrent = testingAccountId === account.id && modelsMutation.isPending;
 
       return (
-        <View>
+        <Pressable onPress={() => router.push(`/accounts/${account.id}`)}>
           <ListCard
             title={account.name}
-            meta={`${account.platform} · ${account.type}`}
+            meta={formatAccountMeta(account.platform, account.type)}
             badge={statusText}
             badgeTone={visualStatus.badgeTone}
             icon={KeyRound}
@@ -218,45 +221,53 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
             <View className="gap-3">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2">
-                  {account.schedulable && !isError ? <ShieldCheck color="#7d7468" size={14} /> : <ShieldOff color="#7d7468" size={14} />}
-                  <Text className="text-sm text-[#7d7468]">状态：{statusText}</Text>
+                  {account.schedulable && !isError ? <ShieldCheck color="#6b7280" size={14} /> : <ShieldOff color="#6b7280" size={14} />}
+                  <Text className="text-sm text-[#6b7280]">状态：{statusText}</Text>
                 </View>
-                <Text className="text-xs text-[#7d7468]">最近使用 {formatTime(account.last_used_at || account.updated_at)}</Text>
+                <Text className="text-xs text-[#6b7280]">最近使用 {formatTime(account.last_used_at || account.updated_at)}</Text>
               </View>
 
               <View className="flex-row gap-2">
-                <View className="flex-1 rounded-[14px] bg-[#f1ece2] px-3 py-3">
-                  <Text className="text-[11px] text-[#7d7468]">请求次数</Text>
-                  <Text className="mt-1 text-sm font-bold text-[#16181a]">{todayStats.requests}</Text>
+                <View className="flex-1 rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-3 py-3">
+                  <Text className="text-[11px] text-[#6b7280]">今日请求</Text>
+                  <Text className="mt-1 text-sm font-bold text-[#111827]">{todayStats.requests}</Text>
                 </View>
-                <View className="flex-1 rounded-[14px] bg-[#f1ece2] px-3 py-3">
-                  <Text className="text-[11px] text-[#7d7468]">消费金额</Text>
-                  <Text className="mt-1 text-sm font-bold text-[#16181a]">${todayStats.cost.toFixed(2)}</Text>
+                <View className="flex-1 rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-3 py-3">
+                  <Text className="text-[11px] text-[#6b7280]">今日成本</Text>
+                  <Text className="mt-1 text-sm font-bold text-[#111827]">${todayStats.cost.toFixed(2)}</Text>
                 </View>
-                <View className="flex-1 rounded-[14px] bg-[#f1ece2] px-3 py-3">
-                  <Text className="text-[11px] text-[#7d7468]">token消耗</Text>
-                  <Text className="mt-1 text-sm font-bold text-[#16181a]">{formatTokenValue(todayStats.tokens)}</Text>
+                <View className="flex-1 rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-3 py-3">
+                  <Text className="text-[11px] text-[#6b7280]">Token</Text>
+                  <Text className="mt-1 text-sm font-bold text-[#111827]">{formatTokenValue(todayStats.tokens)}</Text>
                 </View>
               </View>
 
-              <Text className="text-xs text-[#7d7468]">优先级 {account.priority ?? 0} · 倍率 {(account.rate_multiplier ?? 1).toFixed(2)}x</Text>
+              <Text className="text-xs text-[#6b7280]">优先级 {account.priority ?? 0} · 倍率 {(account.rate_multiplier ?? 1).toFixed(2)}x</Text>
 
-              {groupsText ? <Text className="text-xs text-[#7d7468]">分组 {groupsText}</Text> : null}
-              {account.error_message ? <Text className="text-xs text-[#a4512b]">异常信息：{account.error_message}</Text> : null}
+              {groupsText ? <Text className="text-xs text-[#6b7280]">分组 {groupsText}</Text> : null}
+              {account.error_message ? <Text className="text-xs text-[#b42318]">异常信息：{account.error_message}</Text> : null}
 
               <View className="flex-row gap-2">
                 <Pressable
-                  className="rounded-full bg-[#1b1d1f] px-4 py-2"
+                  className="rounded-[10px] bg-[#111827] px-4 py-2"
                   disabled={isTestingCurrent}
                   onPress={(event) => {
                     event.stopPropagation();
                     setTestingAccountId(account.id);
-                    testMutation.mutate(account.id, {
-                      onSuccess: () => {
-                        setTestFeedbackByAccountId((current) => ({ ...current, [account.id]: '测试成功' }));
+                    modelsMutation.mutate(account.id, {
+                      onSuccess: (models) => {
+                        const modelNames = models
+                          .map((model) => model.id || model.display_name || model.name || model.model)
+                          .filter(Boolean) as string[];
+                        setTestFeedbackByAccountId((current) => ({
+                          ...current,
+                          [account.id]: modelNames.length > 0
+                            ? `可用模型：${modelNames.slice(0, 6).join('、')}${modelNames.length > 6 ? ` 等 ${modelNames.length} 个` : ''}`
+                            : '后端未返回可用模型',
+                        }));
                       },
                       onError: (error) => {
-                        const message = error instanceof Error && error.message ? error.message : '测试失败';
+                        const message = error instanceof Error && error.message ? error.message : '模型列表获取失败';
                         setTestFeedbackByAccountId((current) => ({ ...current, [account.id]: message }));
                       },
                       onSettled: () => {
@@ -265,10 +276,19 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
                     });
                   }}
                 >
-                  <Text className="text-xs font-semibold uppercase tracking-[1.2px] text-[#f6f1e8]">{isTestingCurrent ? '测试中...' : '测试'}</Text>
+                  <Text className="text-xs font-semibold text-white">{isTestingCurrent ? '加载中...' : '查看模型'}</Text>
                 </Pressable>
                 <Pressable
-                  className="rounded-full bg-[#e7dfcf] px-4 py-2"
+                  className="rounded-[10px] bg-[#2563eb] px-4 py-2"
+                  onPress={(event) => {
+                    event.stopPropagation();
+                    router.push(`/accounts/${account.id}`);
+                  }}
+                >
+                  <Text className="text-xs font-semibold text-white">编辑</Text>
+                </Pressable>
+                <Pressable
+                  className="rounded-[10px] bg-[#f3f4f6] px-4 py-2"
                   disabled={isTogglingCurrent}
                   onPress={(event) => {
                     event.stopPropagation();
@@ -283,17 +303,17 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
                     });
                   }}
                 >
-                  <Text className="text-xs font-semibold uppercase tracking-[1.2px] text-[#4e463e]">{isTogglingCurrent ? '处理中...' : toggleLabel}</Text>
+                  <Text className="text-xs font-semibold text-[#4b5563]">{isTogglingCurrent ? '处理中...' : toggleLabel}</Text>
                 </Pressable>
               </View>
 
-              {testFeedback ? <Text className="text-xs text-[#1d5f55]">测试结果：{testFeedback}</Text> : null}
+              {testFeedback ? <Text className="text-xs leading-4 text-[#2563eb]">{testFeedback}</Text> : null}
             </View>
           </ListCard>
-        </View>
+        </Pressable>
       );
     },
-    [testFeedbackByAccountId, testMutation, testingAccountId, todayByAccountId, toggleMutation, togglingAccountId]
+    [modelsMutation, testFeedbackByAccountId, testingAccountId, todayByAccountId, toggleMutation, togglingAccountId]
   );
 
   const emptyState = useMemo(
@@ -304,9 +324,14 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
   return (
     <ScreenShell
       title="账号清单"
-      subtitle="查看名称、平台&类型、请求次数、消费金额、token消耗，并支持筛选与排序。"
-      titleAside={(
-        <Text className="text-[11px] text-[#7d7468]">更接近网页后台的账号视图。</Text>
+      subtitle="查看账号状态、今日用量、可用模型，并快速测试或编辑。"
+      right={(
+        <Pressable
+          onPress={() => router.push('/accounts/create')}
+          className="h-10 w-10 items-center justify-center rounded-[10px] bg-[#2563eb]"
+        >
+          <Plus color="#ffffff" size={18} />
+        </Pressable>
       )}
       variant="minimal"
       scroll={false}
@@ -321,7 +346,10 @@ export function AccountsListScreen({ safeAreaEdges }: AccountsListScreenProps) {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.id}`}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={accountsQuery.isRefetching} onRefresh={() => void accountsQuery.refetch()} tintColor="#1d5f55" />}
+        refreshControl={<RefreshControl refreshing={accountsQuery.isRefetching || batchTodayStatsQuery.isRefetching} onRefresh={() => {
+          void accountsQuery.refetch();
+          void batchTodayStatsQuery.refetch();
+        }} tintColor="#2563eb" />}
         ListHeaderComponent={listHeader}
         ListEmptyComponent={emptyState}
         ItemSeparatorComponent={() => <View className="h-4" />}

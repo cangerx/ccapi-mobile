@@ -26,17 +26,19 @@ type FormValues = z.infer<typeof schema>;
 type ConnectionState = 'idle' | 'checking' | 'success' | 'error';
 
 const colors = {
-  page: '#f4efe4',
-  card: '#fbf8f2',
-  mutedCard: '#f1ece2',
-  primary: '#1d5f55',
-  text: '#16181a',
-  subtext: '#6f665c',
-  border: '#e7dfcf',
-  dangerBg: '#fbf1eb',
-  danger: '#c25d35',
-  successBg: '#e6f4ee',
-  success: '#1d5f55',
+  page: '#f6f7f9',
+  card: '#ffffff',
+  mutedCard: '#f9fafb',
+  primary: '#2563eb',
+  text: '#111827',
+  subtext: '#6b7280',
+  border: '#e5e7eb',
+  inputBorder: '#d1d5db',
+  dangerBg: '#fef3f2',
+  danger: '#b42318',
+  successBg: '#ecfdf3',
+  success: '#027a48',
+  disabled: '#9ca3af',
 };
 
 function getConnectionErrorMessage(error: unknown) {
@@ -71,8 +73,8 @@ function ServerCard({
     <Pressable
       onPress={onSelect}
       style={{
-        backgroundColor: active ? '#e6f4ee' : colors.card,
-        borderRadius: 18,
+        backgroundColor: active ? colors.successBg : colors.card,
+        borderRadius: 12,
         padding: 16,
         borderWidth: 1,
         borderColor: active ? colors.success : colors.border,
@@ -82,7 +84,7 @@ function ServerCard({
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{account.label}</Text>
           <Text style={{ marginTop: 6, fontSize: 13, lineHeight: 20, color: colors.subtext }}>{account.baseUrl}</Text>
-          <Text style={{ marginTop: 8, fontSize: 11, color: '#8a8072' }}>更新时间 {new Date(account.updatedAt).toLocaleString()}</Text>
+          <Text style={{ marginTop: 8, fontSize: 11, color: colors.subtext }}>更新时间 {new Date(account.updatedAt).toLocaleString()}</Text>
         </View>
         {active ? (
           <View style={{ backgroundColor: colors.success, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 }}>
@@ -92,11 +94,11 @@ function ServerCard({
       </View>
 
       <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
-        <Pressable onPress={onSelect} style={{ flex: 1, backgroundColor: active ? '#d7eee4' : colors.primary, borderRadius: 14, paddingVertical: 11, alignItems: 'center' }}>
+        <Pressable onPress={onSelect} style={{ flex: 1, backgroundColor: active ? '#dcfce7' : colors.primary, borderRadius: 10, paddingVertical: 11, alignItems: 'center' }}>
           <Text style={{ color: active ? colors.success : '#fff', fontSize: 13, fontWeight: '700' }}>{active ? '已选中' : '切换到此服务器'}</Text>
         </Pressable>
-        <Pressable onPress={onDelete} style={{ backgroundColor: colors.border, borderRadius: 14, paddingHorizontal: 16, justifyContent: 'center' }}>
-          <Text style={{ color: '#7a3d31', fontSize: 13, fontWeight: '700' }}>删除</Text>
+        <Pressable onPress={onDelete} style={{ backgroundColor: colors.dangerBg, borderRadius: 10, borderWidth: 1, borderColor: '#fecaca', paddingHorizontal: 16, justifyContent: 'center' }}>
+          <Text style={{ color: colors.danger, fontSize: 13, fontWeight: '700' }}>删除</Text>
         </Pressable>
       </View>
     </Pressable>
@@ -180,12 +182,12 @@ export default function SettingsScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 110, gap: 14 }}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={() => void handleRefresh()} tintColor="#1d5f55" />}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={() => void handleRefresh()} tintColor="#2563eb" />}
       >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 28, fontWeight: '700', color: colors.text }}>服务器</Text>
-            <Text style={{ marginTop: 6, fontSize: 13, color: '#8a8072' }}>选择当前管理的服务器，或添加新的服务器。</Text>
+            <Text style={{ marginTop: 6, fontSize: 13, color: colors.subtext }}>选择当前管理的服务器，或添加新的服务器。</Text>
           </View>
           <Pressable
             onPress={() => {
@@ -193,14 +195,14 @@ export default function SettingsScreen() {
               setConnectionState('idle');
               setConnectionMessage('');
             }}
-            style={{ backgroundColor: colors.primary, borderRadius: 999, width: 42, height: 42, alignItems: 'center', justifyContent: 'center' }}
+            style={{ backgroundColor: colors.primary, borderRadius: 10, width: 42, height: 42, alignItems: 'center', justifyContent: 'center' }}
           >
             <Text style={{ color: '#fff', fontSize: 24, lineHeight: 24 }}>+</Text>
           </Pressable>
         </View>
 
         {showForm ? (
-          <View style={{ backgroundColor: colors.card, borderRadius: 18, padding: 16, gap: 14 }}>
+          <View style={{ backgroundColor: colors.card, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 16, gap: 14 }}>
             <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>添加服务器</Text>
 
             <View>
@@ -213,10 +215,10 @@ export default function SettingsScreen() {
                     value={value}
                     onChangeText={onChange}
                     placeholder="例如：https://api.example.com"
-                    placeholderTextColor="#9b9081"
+                    placeholderTextColor="#9ca3af"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    style={{ backgroundColor: colors.mutedCard, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: colors.text }}
+                    style={{ backgroundColor: colors.mutedCard, borderWidth: 1, borderColor: colors.inputBorder, borderRadius: 10, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: colors.text }}
                   />
                 )}
               />
@@ -233,14 +235,16 @@ export default function SettingsScreen() {
                       value={value}
                       onChangeText={onChange}
                       placeholder="admin-xxxxxxxx"
-                      placeholderTextColor="#9b9081"
+                      placeholderTextColor="#9ca3af"
                       autoCapitalize="none"
                       autoCorrect={false}
                       secureTextEntry={!showAdminKey}
                       style={{
                         flex: 1,
                         backgroundColor: colors.mutedCard,
-                        borderRadius: 16,
+                        borderWidth: 1,
+                        borderColor: colors.inputBorder,
+                        borderRadius: 10,
                         paddingHorizontal: 16,
                         paddingVertical: 14,
                         fontSize: 16,
@@ -249,9 +253,9 @@ export default function SettingsScreen() {
                     />
                     <Pressable
                       onPress={() => setShowAdminKey((value) => !value)}
-                      style={{ backgroundColor: colors.border, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}
+                      style={{ backgroundColor: '#f3f4f6', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10 }}
                     >
-                      <Text style={{ fontSize: 12, fontWeight: '700', color: '#4e463e' }}>{showAdminKey ? '隐藏' : '显示'}</Text>
+                      <Text style={{ fontSize: 12, fontWeight: '700', color: '#4b5563' }}>{showAdminKey ? '隐藏' : '显示'}</Text>
                     </Pressable>
                   </View>
                 )}
@@ -259,13 +263,13 @@ export default function SettingsScreen() {
             </View>
 
             {formState.errors.baseUrl || formState.errors.adminApiKey ? (
-              <View style={{ borderRadius: 14, backgroundColor: colors.dangerBg, paddingHorizontal: 14, paddingVertical: 12 }}>
+              <View style={{ borderRadius: 10, backgroundColor: colors.dangerBg, borderWidth: 1, borderColor: '#fecaca', paddingHorizontal: 14, paddingVertical: 12 }}>
                 <Text style={{ color: colors.danger, fontSize: 14 }}>{formState.errors.baseUrl?.message || formState.errors.adminApiKey?.message}</Text>
               </View>
             ) : null}
 
             {connectionMessage ? (
-              <View style={{ borderRadius: 14, backgroundColor: connectionState === 'success' ? colors.successBg : colors.dangerBg, paddingHorizontal: 14, paddingVertical: 12 }}>
+              <View style={{ borderRadius: 10, backgroundColor: connectionState === 'success' ? colors.successBg : colors.dangerBg, borderWidth: 1, borderColor: connectionState === 'success' ? '#bbf7d0' : '#fecaca', paddingHorizontal: 14, paddingVertical: 12 }}>
                 <Text style={{ color: connectionState === 'success' ? colors.success : colors.danger, fontSize: 14 }}>{connectionMessage}</Text>
               </View>
             ) : null}
@@ -274,7 +278,7 @@ export default function SettingsScreen() {
               <Pressable
                 onPress={handleSubmit(handleAdd)}
                 disabled={connectionState === 'checking'}
-                style={{ flex: 1, backgroundColor: connectionState === 'checking' ? '#7ca89f' : colors.primary, borderRadius: 16, paddingVertical: 14, alignItems: 'center' }}
+                style={{ flex: 1, backgroundColor: connectionState === 'checking' ? colors.disabled : colors.primary, borderRadius: 10, paddingVertical: 14, alignItems: 'center' }}
               >
                 <Text style={{ color: '#fff', fontSize: 14, fontWeight: '700' }}>{connectionState === 'checking' ? '检测中...' : '保存并使用'}</Text>
               </Pressable>
@@ -285,9 +289,9 @@ export default function SettingsScreen() {
                   setConnectionMessage('');
                   reset({ baseUrl: '', adminApiKey: '' });
                 }}
-                style={{ flex: 1, backgroundColor: colors.border, borderRadius: 16, paddingVertical: 14, alignItems: 'center' }}
+                style={{ flex: 1, backgroundColor: '#f3f4f6', borderRadius: 10, paddingVertical: 14, alignItems: 'center' }}
               >
-                <Text style={{ color: '#4e463e', fontSize: 14, fontWeight: '700' }}>取消</Text>
+                <Text style={{ color: '#4b5563', fontSize: 14, fontWeight: '700' }}>取消</Text>
               </Pressable>
             </View>
           </View>
@@ -305,7 +309,7 @@ export default function SettingsScreen() {
           ))}
 
           {config.accounts.length === 0 ? (
-            <View style={{ backgroundColor: colors.card, borderRadius: 18, padding: 18 }}>
+            <View style={{ backgroundColor: colors.card, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 18 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text }}>还没有服务器</Text>
               <Text style={{ marginTop: 8, fontSize: 13, lineHeight: 21, color: colors.subtext }}>点击右上角 + 添加服务器，保存成功后会自动切换并进入概览。</Text>
             </View>

@@ -30,8 +30,8 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         {!isReady ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4efe4' }}>
-            <ActivityIndicator color="#1d5f55" />
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f6f7f9' }}>
+            <ActivityIndicator color="#2563eb" />
           </View>
         ) : (
           <Stack initialRouteName="(tabs)" screenOptions={{ headerShown: false }}>
@@ -45,8 +45,8 @@ export default function RootLayout() {
                 headerShown: true,
                 title: '用户详情',
                 headerBackTitle: '返回',
-                headerTintColor: '#16181a',
-                headerStyle: { backgroundColor: '#f4efe4' },
+                headerTintColor: '#111827',
+                headerStyle: { backgroundColor: '#f6f7f9' },
                 headerShadowVisible: false,
               }}
             />
@@ -58,8 +58,8 @@ export default function RootLayout() {
                 headerShown: true,
                 title: '添加账号',
                 headerBackTitle: '返回',
-                headerTintColor: '#16181a',
-                headerStyle: { backgroundColor: '#f4efe4' },
+                headerTintColor: '#111827',
+                headerStyle: { backgroundColor: '#f6f7f9' },
                 headerShadowVisible: false,
               }}
             />
@@ -71,8 +71,8 @@ export default function RootLayout() {
                 headerShown: true,
                 title: '添加用户',
                 headerBackTitle: '返回',
-                headerTintColor: '#16181a',
-                headerStyle: { backgroundColor: '#f4efe4' },
+                headerTintColor: '#111827',
+                headerStyle: { backgroundColor: '#f6f7f9' },
                 headerShadowVisible: false,
               }}
             />
@@ -84,8 +84,21 @@ export default function RootLayout() {
                 headerShown: true,
                 title: '添加账号',
                 headerBackTitle: '返回',
-                headerTintColor: '#16181a',
-                headerStyle: { backgroundColor: '#f4efe4' },
+                headerTintColor: '#111827',
+                headerStyle: { backgroundColor: '#f6f7f9' },
+                headerShadowVisible: false,
+              }}
+            />
+            <Stack.Screen
+              name="accounts/[id]"
+              options={{
+                animation: 'slide_from_right',
+                presentation: 'card',
+                headerShown: true,
+                title: '账号详情',
+                headerBackTitle: '返回',
+                headerTintColor: '#111827',
+                headerStyle: { backgroundColor: '#f6f7f9' },
                 headerShadowVisible: false,
               }}
             />
@@ -97,8 +110,8 @@ export default function RootLayout() {
                 headerShown: true,
                 title: '账号清单',
                 headerBackTitle: '返回',
-                headerTintColor: '#16181a',
-                headerStyle: { backgroundColor: '#f4efe4' },
+                headerTintColor: '#111827',
+                headerStyle: { backgroundColor: '#f6f7f9' },
                 headerShadowVisible: false,
               }}
             />

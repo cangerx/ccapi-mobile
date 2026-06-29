@@ -1,7 +1,7 @@
 import { adminConfigState } from '@/src/store/admin-config';
 import type { ApiEnvelope } from '@/src/types/admin';
 
-function buildRequestUrl(baseUrl: string, path: string) {
+export function buildAdminRequestUrl(baseUrl: string, path: string) {
   const normalizedBase = baseUrl.trim().replace(/\/$/, '');
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   const duplicatedPrefixes = ['/api/v1', '/api'];
@@ -42,7 +42,7 @@ export async function adminFetch<T>(
     headers.set('Idempotency-Key', options.idempotencyKey);
   }
 
-  const response = await fetch(buildRequestUrl(baseUrl, path), {
+  const response = await fetch(buildAdminRequestUrl(baseUrl, path), {
     ...init,
     headers,
   });
@@ -61,4 +61,34 @@ export async function adminFetch<T>(
   }
 
   return json.data as T;
+}
+
+export async function adminRawFetch(path: string, init: RequestInit = {}) {
+  const baseUrl = adminConfigState.baseUrl.trim().replace(/\/$/, '');
+  const adminApiKey = adminConfigState.adminApiKey.trim();
+
+  if (!baseUrl) {
+    throw new Error('BASE_URL_REQUIRED');
+  }
+
+  if (!adminApiKey) {
+    throw new Error('ADMIN_API_KEY_REQUIRED');
+  }
+
+  const headers = new Headers(init.headers);
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  headers.set('x-api-key', adminApiKey);
+
+  const response = await fetch(buildAdminRequestUrl(baseUrl, path), {
+    ...init,
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error('REQUEST_FAILED');
+  }
+
+  return response;
 }

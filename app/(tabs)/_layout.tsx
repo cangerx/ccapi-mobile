@@ -1,5 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
-import { ChartNoAxesCombined, Settings2, Users } from 'lucide-react-native';
+import { ChartNoAxesCombined, KeyRound, Settings2, Users } from 'lucide-react-native';
 
 import { adminConfigState, hasAuthenticatedAdminSession } from '@/src/store/admin-config';
 
@@ -18,11 +18,12 @@ export default function TabsLayout() {
       initialRouteName={hasAccount ? 'monitor' : 'settings'}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#1d5f55',
-        tabBarInactiveTintColor: '#8a8072',
+        tabBarActiveTintColor: '#2563eb',
+        tabBarInactiveTintColor: '#6b7280',
         tabBarStyle: {
-          backgroundColor: '#fbf8f2',
-          borderTopWidth: 0,
+          backgroundColor: '#ffffff',
+          borderTopWidth: 1,
+          borderTopColor: '#e5e7eb',
           height: 84,
           paddingTop: 10,
           paddingBottom: 18,
@@ -50,6 +51,13 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="accounts"
+        options={{
+          title: '账号',
+          tabBarIcon: ({ color, size }) => <KeyRound color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: '服务器',
@@ -57,7 +65,6 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen name="groups" options={{ href: null }} />
-      <Tabs.Screen name="accounts" options={{ href: null }} />
     </Tabs>
   );
 }

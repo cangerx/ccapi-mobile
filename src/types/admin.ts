@@ -6,6 +6,9 @@ export type ApiEnvelope<T> = {
   data?: T;
 };
 
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type JsonObject = { [key: string]: JsonValue };
+
 export type PaginatedData<T> = {
   items: T[];
   total: number;
@@ -179,6 +182,91 @@ export type AccountTodayStats = {
   user_cost?: number;
 };
 
+export type AccountTestEvent = {
+  type: string;
+  text?: string;
+  model?: string;
+  status?: string;
+  code?: string;
+  image_url?: string;
+  mime_type?: string;
+  data?: JsonValue;
+  success?: boolean;
+  error?: string;
+};
+
+export type AccountTestResult = {
+  success: boolean;
+  model?: string;
+  message: string;
+  events: AccountTestEvent[];
+};
+
+export type AccountUsageHistory = {
+  date: string;
+  label: string;
+  requests: number;
+  tokens: number;
+  cost: number;
+  actual_cost: number;
+  user_cost: number;
+};
+
+export type AccountUsageSummary = {
+  days: number;
+  actual_days_used: number;
+  total_cost: number;
+  total_user_cost: number;
+  total_standard_cost: number;
+  total_requests: number;
+  total_tokens: number;
+  avg_daily_cost: number;
+  avg_daily_user_cost: number;
+  avg_daily_requests: number;
+  avg_daily_tokens: number;
+  avg_duration_ms: number;
+  today?: {
+    date: string;
+    cost: number;
+    user_cost: number;
+    requests: number;
+    tokens: number;
+  } | null;
+  highest_cost_day?: {
+    date: string;
+    label: string;
+    cost: number;
+    user_cost: number;
+    requests: number;
+  } | null;
+  highest_request_day?: {
+    date: string;
+    label: string;
+    requests: number;
+    cost: number;
+    user_cost: number;
+  } | null;
+};
+
+export type AccountUsageStatsResponse = {
+  history: AccountUsageHistory[];
+  summary: AccountUsageSummary;
+  models: ModelStat[];
+  endpoints?: Array<{ endpoint: string; requests: number; total_tokens: number; cost: number; actual_cost: number }>;
+  upstream_endpoints?: Array<{ endpoint: string; requests: number; total_tokens: number; cost: number; actual_cost: number }>;
+};
+
+export type AccountModel = {
+  id?: string;
+  name?: string;
+  model?: string;
+  display_name?: string;
+  object?: string;
+  type?: string;
+  created_at?: string;
+  [key: string]: JsonValue | undefined;
+};
+
 export type AdminAccount = {
   id: number;
   name: string;
@@ -189,29 +277,78 @@ export type AdminAccount = {
   priority?: number;
   concurrency?: number;
   current_concurrency?: number;
+  load_factor?: number | null;
   rate_multiplier?: number;
+  notes?: string | null;
+  proxy_id?: number | null;
+  proxy_fallback_origin_id?: number | null;
+  proxy_fallback_origin_name?: string | null;
   error_message?: string;
+  created_at?: string;
   updated_at?: string;
   last_used_at?: string | null;
+  expires_at?: number | null;
+  auto_pause_on_expired?: boolean;
+  rate_limited_at?: string | null;
+  rate_limit_reset_at?: string | null;
+  overload_until?: string | null;
+  temp_unschedulable_until?: string | null;
+  temp_unschedulable_reason?: string | null;
+  session_window_start?: string | null;
+  session_window_end?: string | null;
+  session_window_status?: string | null;
+  quota_limit?: number | null;
+  quota_used?: number | null;
+  quota_daily_limit?: number | null;
+  quota_daily_used?: number | null;
+  quota_weekly_limit?: number | null;
+  quota_weekly_used?: number | null;
+  current_window_cost?: number | null;
+  active_sessions?: number | null;
+  current_rpm?: number | null;
   group_ids?: number[];
   groups?: AdminGroup[];
-  extra?: Record<string, string | number | boolean | null>;
+  extra?: JsonObject;
 };
 
-export type AccountType = 'apikey' | 'oauth' | 'setup-token' | 'upstream';
+export type AccountType = 'apikey' | 'oauth' | 'setup-token' | 'upstream' | 'bedrock' | 'service_account';
 
 export type CreateAccountRequest = {
   name: string;
   platform: string;
   type: AccountType;
   credentials: Record<string, string | number | boolean | null | undefined>;
-  extra?: Record<string, string | number | boolean | null | undefined>;
+  extra?: JsonObject;
   notes?: string;
   proxy_id?: number;
   concurrency?: number;
   priority?: number;
   rate_multiplier?: number;
+  load_factor?: number;
   group_ids?: number[];
+  expires_at?: number;
+  auto_pause_on_expired?: boolean;
+  confirm_mixed_channel_risk?: boolean;
+};
+
+export type UpdateAccountRequest = {
+  name?: string;
+  platform?: string;
+  type?: string;
+  credentials?: Record<string, string | number | boolean | null | undefined>;
+  extra?: JsonObject;
+  notes?: string;
+  proxy_id?: number;
+  concurrency?: number;
+  priority?: number;
+  rate_multiplier?: number;
+  load_factor?: number;
+  group_ids?: number[];
+  expires_at?: number;
+  auto_pause_on_expired?: boolean;
+  confirm_mixed_channel_risk?: boolean;
+  status?: string;
+  schedulable?: boolean;
 };
 
 export type CreateUserRequest = {

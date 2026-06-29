@@ -1,6 +1,9 @@
-import { adminFetch } from '@/src/lib/admin-fetch';
+import { adminFetch, adminRawFetch } from '@/src/lib/admin-fetch';
 import type {
   AccountTodayStats,
+  AccountModel,
+  AccountTestResult,
+  AccountUsageStatsResponse,
   AdminAccount,
   AdminApiKey,
   AdminGroup,
@@ -14,6 +17,7 @@ import type {
   CreateAccountRequest,
   CreateUserRequest,
   PaginatedData,
+  UpdateAccountRequest,
   UsageStats,
   UserUsageSummary,
 } from '@/src/types/admin';
@@ -147,7 +151,7 @@ export function getGroup(groupId: number) {
 
 export function listAccounts(search = '') {
   return adminFetch<PaginatedData<AdminAccount>>(
-    `/api/v1/admin/accounts${buildQuery({ page: 1, page_size: 20, search: search.trim() })}`
+    `/api/v1/admin/accounts${buildQuery({ page: 1, page_size: 20, search: search.trim(), sort_by: 'updated_at', sort_order: 'desc' })}`
   );
 }
 
@@ -162,18 +166,76 @@ export function createAccount(body: CreateAccountRequest) {
   });
 }
 
+export function updateAccount(accountId: number, body: UpdateAccountRequest) {
+  return adminFetch<AdminAccount>(`/api/v1/admin/accounts/${accountId}`, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+}
+
 export function getAccountTodayStats(accountId: number) {
   return adminFetch<AccountTodayStats>(`/api/v1/admin/accounts/${accountId}/today-stats`);
 }
 
-export function testAccount(accountId: number) {
-  return adminFetch(`/api/v1/admin/accounts/${accountId}/test`, {
+export function getBatchAccountTodayStats(accountIds: number[]) {
+  return adminFetch<{ stats: Record<string, AccountTodayStats> }>('/api/v1/admin/accounts/today-stats/batch', {
+    method: 'POST',
+    body: JSON.stringify({ account_ids: accountIds }),
+  });
+}
+
+export function getAccountStats(accountId: number, days = 30) {
+  return adminFetch<AccountUsageStatsResponse>(`/api/v1/admin/accounts/${accountId}/stats${buildQuery({ days })}`);
+}
+
+export function listAccountModels(accountId: number) {
+  return adminFetch<AccountModel[]>(`/api/v1/admin/accounts/${accountId}/models`);
+}
+
+function parseAccountTestEvents(rawText: string) {
+  return rawText
+    .split(/\n\n+/)
+    .flatMap((chunk) => chunk.split('\n').filter((line) => line.startsWith('data:')).map((line) => line.slice(5).trim()))
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as AccountTestResult['events'][number]);
+}
+
+export async function testAccount(accountId: number, body?: { model_id?: string; prompt?: string; mode?: string }) {
+  const response = await adminRawFetch(`/api/v1/admin/accounts/${accountId}/test`, {
+    method: 'POST',
+    body: JSON.stringify(body ?? {}),
+  });
+  const events = parseAccountTestEvents(await response.text());
+  const errorEvent = events.find((event) => event.type === 'error' || event.error);
+  if (errorEvent?.error) {
+    throw new Error(errorEvent.error);
+  }
+
+  const startEvent = events.find((event) => event.model);
+  const contentEvent = events.find((event) => event.text);
+
+  return {
+    success: events.some((event) => event.type === 'test_complete' && event.success !== false),
+    model: startEvent?.model,
+    message: contentEvent?.text || '测试完成',
+    events,
+  } satisfies AccountTestResult;
+}
+
+export function refreshAccount(accountId: number) {
+  return adminFetch<AdminAccount>(`/api/v1/admin/accounts/${accountId}/refresh`, {
     method: 'POST',
   });
 }
 
-export function refreshAccount(accountId: number) {
-  return adminFetch(`/api/v1/admin/accounts/${accountId}/refresh`, {
+export function recoverAccountState(accountId: number) {
+  return adminFetch<AdminAccount>(`/api/v1/admin/accounts/${accountId}/recover-state`, {
+    method: 'POST',
+  });
+}
+
+export function clearAccountError(accountId: number) {
+  return adminFetch<AdminAccount>(`/api/v1/admin/accounts/${accountId}/clear-error`, {
     method: 'POST',
   });
 }

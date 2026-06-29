@@ -10,16 +10,17 @@ import { getDashboardSnapshot, getUsageStats, getUser, listUserApiKeys, updateUs
 import type { AdminApiKey, BalanceOperation } from '@/src/types/admin';
 
 const colors = {
-  page: '#f4efe4',
-  card: '#fbf8f2',
-  text: '#16181a',
-  subtext: '#6f665c',
-  border: '#e7dfcf',
-  primary: '#1d5f55',
-  dark: '#1b1d1f',
-  errorBg: '#f7e1d6',
-  errorText: '#a4512b',
-  muted: '#f7f1e6',
+  page: '#f6f7f9',
+  card: '#ffffff',
+  text: '#111827',
+  subtext: '#6b7280',
+  border: '#e5e7eb',
+  inputBorder: '#d1d5db',
+  primary: '#2563eb',
+  dark: '#111827',
+  errorBg: '#fef3f2',
+  errorText: '#b42318',
+  muted: '#f9fafb',
 };
 
 type RangeKey = '24h' | '7d' | '30d';
@@ -115,7 +116,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <View
       style={{
         backgroundColor: colors.card,
-        borderRadius: 16,
+        borderRadius: 12,
         padding: 16,
         marginBottom: 12,
         borderWidth: 1,
@@ -134,7 +135,7 @@ function GridField({ label, value }: { label: string; value: string }) {
       style={{
         width: '48.5%',
         backgroundColor: colors.muted,
-        borderRadius: 12,
+        borderRadius: 10,
         paddingHorizontal: 12,
         paddingVertical: 12,
         borderWidth: 1,
@@ -153,7 +154,7 @@ function MetricCard({ label, value }: { label: string; value: string }) {
       style={{
         flex: 1,
         backgroundColor: colors.muted,
-        borderRadius: 12,
+        borderRadius: 10,
         paddingHorizontal: 12,
         paddingVertical: 12,
         borderWidth: 1,
@@ -168,8 +169,8 @@ function MetricCard({ label, value }: { label: string; value: string }) {
 
 function StatusBadge({ text }: { text: string }) {
   const normalized = text.toLowerCase();
-  const backgroundColor = normalized === 'active' ? '#dff4ea' : normalized === 'inactive' || normalized === 'disabled' ? '#ece5da' : '#f7e1d6';
-  const color = normalized === 'active' ? '#17663f' : normalized === 'inactive' || normalized === 'disabled' ? '#6f665c' : '#a4512b';
+  const backgroundColor = normalized === 'active' ? '#ecfdf3' : normalized === 'inactive' || normalized === 'disabled' ? '#f3f4f6' : '#fef3f2';
+  const color = normalized === 'active' ? '#027a48' : normalized === 'inactive' || normalized === 'disabled' ? '#4b5563' : colors.errorText;
 
   return (
     <View style={{ backgroundColor, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 }}>
@@ -184,13 +185,13 @@ function CopyInlineButton({ copied, onPress }: { copied: boolean; onPress: () =>
       onPress={onPress}
       style={{
         marginLeft: 8,
-        backgroundColor: copied ? '#dff4ea' : '#e7dfcf',
+        backgroundColor: copied ? '#ecfdf3' : '#f3f4f6',
         borderRadius: 999,
         paddingHorizontal: 10,
         paddingVertical: 6,
       }}
     >
-      <Text style={{ fontSize: 11, fontWeight: '700', color: copied ? '#17663f' : '#4e463e' }}>{copied ? '已复制' : '复制'}</Text>
+      <Text style={{ fontSize: 11, fontWeight: '700', color: copied ? '#027a48' : '#4b5563' }}>{copied ? '已复制' : '复制'}</Text>
     </Pressable>
   );
 }
@@ -200,7 +201,7 @@ function KeyItem({ item, copied, onCopy }: { item: AdminApiKey; copied: boolean;
     <View
       style={{
         backgroundColor: colors.muted,
-        borderRadius: 14,
+        borderRadius: 10,
         padding: 12,
         borderWidth: 1,
         borderColor: colors.border,
@@ -431,7 +432,7 @@ export default function UserDetailScreen() {
                   disabled={statusMutation.isPending || user.role?.toLowerCase() === 'admin'}
                   onPress={handleToggleUserStatus}
                   style={{
-                    backgroundColor: user.status === 'disabled' ? colors.primary : '#8b3f1f',
+                    backgroundColor: user.status === 'disabled' ? colors.primary : colors.errorText,
                     borderRadius: 10,
                     paddingHorizontal: 12,
                     paddingVertical: 10,
@@ -447,7 +448,7 @@ export default function UserDetailScreen() {
               {user.role?.toLowerCase() === 'admin' ? <Text style={{ marginTop: 8, fontSize: 12, color: colors.subtext }}>管理员用户不支持禁用。</Text> : null}
 
               {statusError ? (
-                <View style={{ marginTop: 10, backgroundColor: colors.errorBg, borderRadius: 12, padding: 12 }}>
+                <View style={{ marginTop: 10, backgroundColor: colors.errorBg, borderRadius: 10, borderWidth: 1, borderColor: '#fecaca', padding: 12 }}>
                   <Text style={{ color: colors.errorText }}>{statusError}</Text>
                 </View>
               ) : null}
@@ -492,7 +493,7 @@ export default function UserDetailScreen() {
             {usageStatsQuery.isLoading ? <Text style={{ marginTop: 12, color: colors.subtext }}>正在加载用量统计...</Text> : null}
 
             {usageStatsQuery.error ? (
-              <View style={{ marginTop: 12, backgroundColor: colors.errorBg, borderRadius: 12, padding: 12 }}>
+                <View style={{ marginTop: 12, backgroundColor: colors.errorBg, borderRadius: 10, borderWidth: 1, borderColor: '#fecaca', padding: 12 }}>
                 <Text style={{ color: colors.errorText, fontWeight: '700' }}>用量统计加载失败</Text>
                 <Text style={{ marginTop: 6, color: colors.errorText }}>{getErrorMessage(usageStatsQuery.error)}</Text>
               </View>
@@ -504,7 +505,7 @@ export default function UserDetailScreen() {
                   title="用量趋势"
                   subtitle={`${range.start_date} 到 ${range.end_date}`}
                   points={trendPoints}
-                  color="#1d5f55"
+                  color="#2563eb"
                   formatValue={(value) => formatTokenValue(value)}
                   compact
                 />
@@ -514,7 +515,7 @@ export default function UserDetailScreen() {
             {usageSnapshotQuery.isLoading ? <Text style={{ marginTop: 12, color: colors.subtext }}>正在加载趋势图...</Text> : null}
 
             {usageSnapshotQuery.error ? (
-              <View style={{ marginTop: 12, backgroundColor: colors.errorBg, borderRadius: 12, padding: 12 }}>
+              <View style={{ marginTop: 12, backgroundColor: colors.errorBg, borderRadius: 10, borderWidth: 1, borderColor: '#fecaca', padding: 12 }}>
                 <Text style={{ color: colors.errorText, fontWeight: '700' }}>趋势加载失败</Text>
                 <Text style={{ marginTop: 6, color: colors.errorText }}>{getErrorMessage(usageSnapshotQuery.error)}</Text>
               </View>
@@ -526,12 +527,12 @@ export default function UserDetailScreen() {
               value={searchText}
               onChangeText={setSearchText}
               placeholder="搜索名称 / Key / 分组"
-              placeholderTextColor="#9a9082"
+              placeholderTextColor="#9ca3af"
               style={{
                 backgroundColor: colors.muted,
                 borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: 12,
+                borderColor: colors.inputBorder,
+                borderRadius: 10,
                 paddingHorizontal: 12,
                 paddingVertical: 12,
                 color: colors.text,
@@ -542,7 +543,7 @@ export default function UserDetailScreen() {
             {apiKeysQuery.isLoading ? <Text style={{ color: colors.subtext }}>正在加载 API Keys...</Text> : null}
 
             {apiKeysQuery.error ? (
-              <View style={{ backgroundColor: colors.errorBg, borderRadius: 12, padding: 12 }}>
+              <View style={{ backgroundColor: colors.errorBg, borderRadius: 10, borderWidth: 1, borderColor: '#fecaca', padding: 12 }}>
                 <Text style={{ color: colors.errorText, fontWeight: '700' }}>API Keys 加载失败</Text>
                 <Text style={{ marginTop: 6, color: colors.errorText }}>{getErrorMessage(apiKeysQuery.error)}</Text>
               </View>
@@ -575,8 +576,8 @@ export default function UserDetailScreen() {
                     onPress={() => setOperation(item.value)}
                     style={{
                       flex: 1,
-                      backgroundColor: active ? colors.primary : colors.muted,
-                      borderRadius: 12,
+                      backgroundColor: active ? colors.primary : '#ffffff',
+                      borderRadius: 10,
                       paddingVertical: 12,
                       alignItems: 'center',
                       borderWidth: 1,
@@ -593,13 +594,13 @@ export default function UserDetailScreen() {
               value={amount}
               onChangeText={setAmount}
               placeholder="输入金额，例如 10"
-              placeholderTextColor="#9a9082"
+              placeholderTextColor="#9ca3af"
               keyboardType="decimal-pad"
               style={{
                 backgroundColor: colors.muted,
                 borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: 12,
+                borderColor: colors.inputBorder,
+                borderRadius: 10,
                 paddingHorizontal: 12,
                 paddingVertical: 12,
                 color: colors.text,
@@ -611,12 +612,12 @@ export default function UserDetailScreen() {
               value={notes}
               onChangeText={setNotes}
               placeholder="备注（可选）"
-              placeholderTextColor="#9a9082"
+              placeholderTextColor="#9ca3af"
               style={{
                 backgroundColor: colors.muted,
                 borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: 12,
+                borderColor: colors.inputBorder,
+                borderRadius: 10,
                 paddingHorizontal: 12,
                 paddingVertical: 12,
                 color: colors.text,
@@ -625,12 +626,12 @@ export default function UserDetailScreen() {
             />
 
             {formError ? (
-              <View style={{ backgroundColor: colors.errorBg, borderRadius: 12, padding: 12, marginBottom: 10 }}>
+              <View style={{ backgroundColor: colors.errorBg, borderRadius: 10, borderWidth: 1, borderColor: '#fecaca', padding: 12, marginBottom: 10 }}>
                 <Text style={{ color: colors.errorText }}>{formError}</Text>
               </View>
             ) : null}
 
-            <Pressable onPress={submitBalance} style={{ backgroundColor: colors.dark, borderRadius: 12, paddingVertical: 14, alignItems: 'center' }}>
+            <Pressable onPress={submitBalance} style={{ backgroundColor: colors.dark, borderRadius: 10, paddingVertical: 14, alignItems: 'center' }}>
               <Text style={{ color: '#fff', fontWeight: '700' }}>{balanceMutation.isPending ? '提交中...' : '确认提交'}</Text>
             </Pressable>
           </Section>

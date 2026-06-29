@@ -13,20 +13,20 @@ type ListCardProps = {
 
 const badgeClassMap: Record<NonNullable<ListCardProps['badgeTone']>, { wrap: string; text: string }> = {
   default: {
-    wrap: 'rounded-full bg-[#e7dfcf] px-2.5 py-1',
-    text: 'text-[10px] font-semibold uppercase tracking-[1px] text-[#5d564d]',
+    wrap: 'rounded-full bg-[#f3f4f6] px-2.5 py-1',
+    text: 'text-[10px] font-semibold text-[#4b5563]',
   },
   success: {
-    wrap: 'rounded-full bg-[#e6f4ee] px-2.5 py-1',
-    text: 'text-[10px] font-semibold uppercase tracking-[1px] text-[#1d5f55]',
+    wrap: 'rounded-full bg-[#ecfdf3] px-2.5 py-1',
+    text: 'text-[10px] font-semibold text-[#027a48]',
   },
   muted: {
-    wrap: 'rounded-full bg-[#ece7dc] px-2.5 py-1',
-    text: 'text-[10px] font-semibold uppercase tracking-[1px] text-[#7d7468]',
+    wrap: 'rounded-full bg-[#f3f4f6] px-2.5 py-1',
+    text: 'text-[10px] font-semibold text-[#6b7280]',
   },
   danger: {
-    wrap: 'rounded-full bg-[#f7e1d6] px-2.5 py-1',
-    text: 'text-[10px] font-semibold uppercase tracking-[1px] text-[#a4512b]',
+    wrap: 'rounded-full bg-[#fef3f2] px-2.5 py-1',
+    text: 'text-[10px] font-semibold text-[#b42318]',
   },
 };
 
@@ -34,14 +34,14 @@ export function ListCard({ title, meta, badge, badgeTone = 'default', children, 
   const badgeClass = badgeClassMap[badgeTone];
 
   return (
-    <View className="rounded-[16px] border border-[#efe7d9] bg-[#fbf8f2] p-3.5">
+    <View className="rounded-[12px] border border-[#e5e7eb] bg-white p-3.5">
       <View className="flex-row items-start justify-between gap-3">
         <View className="flex-1">
           <View className="flex-row items-center gap-2">
-            {Icon ? <Icon color="#7d7468" size={16} /> : null}
-            <Text className="text-base font-semibold text-[#16181a]">{title}</Text>
+            {Icon ? <Icon color="#6b7280" size={16} /> : null}
+            <Text className="text-base font-semibold text-[#111827]">{title}</Text>
           </View>
-          {meta ? <Text numberOfLines={1} className="mt-1 text-xs text-[#7d7468]">{meta}</Text> : null}
+          {meta ? <Text numberOfLines={1} className="mt-1 text-xs text-[#6b7280]">{meta}</Text> : null}
         </View>
         {badge ? (
           <View className={badgeClass.wrap}>
